@@ -10,4 +10,4 @@ game=Game(screen,clock,menu)
 while True:
     menu.mainloop(screen,clock,game)
     game.__init__(screen,clock,menu)
-    game.mainloop(screen,clock)
+    game.mainloop(screen,clock) 

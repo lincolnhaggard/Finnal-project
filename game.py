@@ -1,23 +1,31 @@
 import pygame
 import sys
+import random
 from bird import Bird
 from pipe import Pipe
 class Game:
     def __init__(self,screen,clock,menu):
         self.bird=Bird("img/bird.png")
-        self.background=pygame.image.load("img/background.png").convert_alpha()
+        self.background=pygame.image.load("img/bgimgs/bg1/base.png").convert_alpha()
         self.background=pygame.transform.scale(self.background,(1000,1000))
+        self.bglayers=[]
+        for i in range(3):
+            self.bglayers.append(pygame.image.load(f"img/bgimgs/bg1/layer{i+1}.png").convert_alpha())
+            self.bglayers[-1]=pygame.transform.scale(self.bglayers[-1],(1000,1000))
         self.side_burn=pygame.image.load("img/side_burn.png").convert_alpha()
         self.side_burn=pygame.transform.scale(self.side_burn,(1000,1000))
         self.pipes=[]
         self.x_offset=0
         self.y_offset=0
         self.SPAWNPIPE = pygame.USEREVENT
-        pygame.time.set_timer(self.SPAWNPIPE, int(2200.0*1.5))
+        pygame.time.set_timer(self.SPAWNPIPE, int(2200.0))
         self.score=0
         self.font = pygame.font.SysFont(None,48)
+        self.score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
+        self.score_rect= self.score_surface.get_rect(center=(2560/2,75))
         
-
+        self.gap=500
+        self.lastpipe=0
 
         self.resizeall(screen)
         self.mainloop(screen,clock)
@@ -39,26 +47,33 @@ class Game:
             hgt=wdh*1400/2560
             
             self.side_burn=pygame.transform.scale(self.side_burn,(wdh,self.y_offset+5))
+            
         else:
             self.x_offset=0
             self.y_offset=0
         self.hgt=hgt
         self.wdh=wdh
         #theses can be in any order
-        self.background=pygame.image.load("img/background.png").convert_alpha()
+        self.background=pygame.image.load("img/bgimgs/bg1/base.png").convert_alpha()
         self.background=pygame.transform.scale(self.background,(wdh,hgt))
-        
+        for i in range(len(self.bglayers)):
+            self.bglayers[i]=pygame.image.load(f"img/bgimgs/bg1/layer{i+1}.png").convert_alpha()
+            self.bglayers[i]=pygame.transform.scale(self.bglayers[i],(wdh,hgt))
+        self.font = pygame.font.SysFont(None,int(150*(wdh/2560)))
+        self.score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
         self.bird.resize(self.x_offset,self.y_offset,wdh,hgt)
         for pipe in self.pipes:
             pipe.resize(self.x_offset,self.y_offset,wdh,hgt)
+        
+        
     def renderall(self,screen):
         #the last one renders ontop, probably the bird
         screen.blit(self.background,(self.x_offset,self.y_offset))#layer 1 background
+        for i,bglayer in enumerate(self.bglayers):
+            screen.blit(bglayer,(self.x_offset+i*100,self.y_offset))
         for pipe in self.pipes:
             pipe.render(screen)#layer 2 pipe
-        score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
-        score_rect= score_surface.get_rect(center=(202,75))
-        screen.blit(score_surface,score_rect)#layer 3 score
+        screen.blit(self.score_surface,self.score_rect)#layer 3 score
         self.bird.render(screen)#layer 4 bird
 
         #sideburns, last layer for screen resizing
@@ -68,6 +83,23 @@ class Game:
         else:
             screen.blit(self.side_burn,(0,self.hgt+self.y_offset))
 
+    def spawnpipe(self):
+        dificulty=self.score*5
+        
+        minpipedist=200-dificulty#has to be less than 450
+        if minpipedist<100:minpipedist=100
+        height=random.randint(minpipedist,1400-self.gap-minpipedist)
+
+        if dificulty>100:
+            if abs(self.lastpipe-height)<=dificulty*2:
+                height=1400-height
+        self.lastpipe=height
+        gap=self.gap-dificulty
+        if gap<100:gap=100
+        self.pipes.append(Pipe("img/pipe.png",2700,height,True))
+        self.pipes.append(Pipe("img/pipe.png",2700,height+gap,False))
+        self.pipes[-2].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
+        self.pipes[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
         
     def mainloop(self,screen,clock):
         while True:
@@ -81,19 +113,20 @@ class Game:
                     if event.key==pygame.K_SPACE:
                         self.bird.flap()
                 if event.type==self.SPAWNPIPE:
-                    self.pipes.append(Pipe("img/pipe.png",2400,600,True))
-                    self.pipes.append(Pipe("img/pipe.png",2700,400,False))
-                    self.pipes[-2].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
-                    self.pipes[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
+
+                    self.spawnpipe()
+                    
+
+
+
                 if event.type==pygame.VIDEORESIZE:
                     self.resizeall(screen)
-            pygame.display.update()
-            clock.tick(120.0)
             self.bird.update()
             
             for pipe in self.pipes:
                 if pipe.returnscore():
                     self.score+=1
+                    self.score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
                 if pipe.update():
                     self.pipes.remove(pipe)
                     del pipe
@@ -101,3 +134,6 @@ class Game:
             self.renderall(screen)
             if self.bird.check_pipe_collide(self.pipes):
                 break
+            pygame.display.update()
+            clock.tick(120.0)
+            

@@ -5,9 +5,11 @@ class Pipe:
         self.pipe=pygame.image.load(pipe_img).convert_alpha()
         self.pipe_img=pipe_img
         self.pipe_size=(80*3,438*3)
-
-        self.pipe_rect=self.pipe.get_rect(center=(x,y))
-
+        self.pipe=pygame.transform.scale(self.pipe,(80*3,438*3))
+        self.pipe=pygame.transform.flip(self.pipe,False,True)
+        self.pipe_rect=self.pipe.get_rect(x=x,y=y)
+        if top:
+            self.pipe_rect.y-=self.pipe_size[1]
         self.scored=False
         self.top=top
     def update(self):
