@@ -8,10 +8,14 @@ class Game:
         self.bird=Bird("img/bird.png")
         self.background=pygame.image.load("img/bgimgs/bg1/base.png").convert_alpha()
         self.background=pygame.transform.scale(self.background,(1000,1000))
-        self.bglayers=[]
-        for i in range(3):
-            self.bglayers.append(pygame.image.load(f"img/bgimgs/bg1/layer{i+1}.png").convert_alpha())
-            self.bglayers[-1]=pygame.transform.scale(self.bglayers[-1],(1000,1000))
+        
+        self.bglayer=pygame.image.load(f"img/bgimgs/bg1/object.png").convert_alpha()
+        self.bglayer=pygame.transform.scale(self.bglayer,(1000,1000))
+        self.bgoffset=100000
+        self.bgoffsets=[]
+        for i in range(10):
+            self.bgoffsets.append(random.randint(25000,50000)/5000)
+
         self.side_burn=pygame.image.load("img/side_burn.png").convert_alpha()
         self.side_burn=pygame.transform.scale(self.side_burn,(1000,1000))
         self.pipes=[]
@@ -54,11 +58,13 @@ class Game:
         self.hgt=hgt
         self.wdh=wdh
         #theses can be in any order
+
         self.background=pygame.image.load("img/bgimgs/bg1/base.png").convert_alpha()
         self.background=pygame.transform.scale(self.background,(wdh,hgt))
-        for i in range(len(self.bglayers)):
-            self.bglayers[i]=pygame.image.load(f"img/bgimgs/bg1/layer{i+1}.png").convert_alpha()
-            self.bglayers[i]=pygame.transform.scale(self.bglayers[i],(wdh,hgt))
+
+        self.bglayer=pygame.image.load(f"img/bgimgs/bg1/object.png").convert_alpha()
+        self.bglayer=pygame.transform.scale(self.bglayer,(wdh/2560*500,hgt/1400*400))
+
         self.font = pygame.font.SysFont(None,int(150*(wdh/2560)))
         self.score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
         self.bird.resize(self.x_offset,self.y_offset,wdh,hgt)
@@ -69,8 +75,8 @@ class Game:
     def renderall(self,screen):
         #the last one renders ontop, probably the bird
         screen.blit(self.background,(self.x_offset,self.y_offset))#layer 1 background
-        for i,bglayer in enumerate(self.bglayers):
-            screen.blit(bglayer,(self.x_offset+i*100,self.y_offset))
+        for i in range(10):
+            screen.blit(self.bglayer,(self.x_offset-((self.bgoffset*self.bgoffsets[i])%(2560+500))+2560,self.y_offset+(i*140)))
         for pipe in self.pipes:
             pipe.render(screen)#layer 2 pipe
         screen.blit(self.score_surface,self.score_rect)#layer 3 score
@@ -121,8 +127,12 @@ class Game:
 
                 if event.type==pygame.VIDEORESIZE:
                     self.resizeall(screen)
-            self.bird.update()
+
             
+            self.bgoffset+=1
+
+            self.bird.update()
+
             for pipe in self.pipes:
                 if pipe.returnscore():
                     self.score+=1
@@ -135,5 +145,5 @@ class Game:
             if self.bird.check_pipe_collide(self.pipes):
                 break
             pygame.display.update()
-            clock.tick(120.0)
+            clock.tick(60.0)
             

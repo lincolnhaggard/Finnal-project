@@ -13,13 +13,13 @@ class Bird:
         self.rotated_bird=self.rotate_bird()
         screen.blit(self.rotated_bird, (self.bird_rect.x*self.wdh+self.x_offset,self.bird_rect.y*self.hgt+self.y_offset))
     def update(self):
-        self.vos+=0.2
+        self.vos+=0.4
         self.bird_rect.centery+=self.vos
     def rotate_bird(self):
         new_bird=pygame.transform.rotozoom(self.bird, -self.vos * 3, 1)
         return new_bird
     def flap(self):
-        self.vos=-7
+        self.vos=-10
     def resize(self,x_offset,y_offset,wdh,hgt):
         self.x_offset=x_offset
         self.y_offset=y_offset

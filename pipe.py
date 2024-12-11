@@ -13,7 +13,7 @@ class Pipe:
         self.scored=False
         self.top=top
     def update(self):
-        self.pipe_rect.centerx-=4
+        self.pipe_rect.centerx-=8
         if self.pipe_rect.centerx<-140:
             return True
         return False
