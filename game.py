@@ -19,16 +19,21 @@ class Game:
         self.side_burn=pygame.image.load("img/side_burn.png").convert_alpha()
         self.side_burn=pygame.transform.scale(self.side_burn,(1000,1000))
         self.pipes=[]
+
+        self.gap=menu.get_gap()
+        self.speed=menu.get_speed()
+
         self.x_offset=0
         self.y_offset=0
         self.SPAWNPIPE = pygame.USEREVENT
-        pygame.time.set_timer(self.SPAWNPIPE, int(2200.0))
+        pygame.time.set_timer(self.SPAWNPIPE, int(2200/self.speed))
         self.score=0
         self.font = pygame.font.SysFont(None,48)
         self.score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
         self.score_rect= self.score_surface.get_rect(center=(2560/2,75))
         
-        self.gap=500
+        
+
         self.lastpipe=0
 
         self.resizeall(screen)
@@ -108,6 +113,7 @@ class Game:
         self.pipes[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
         
     def mainloop(self,screen,clock):
+        ticked=False
         while True:
             for event in pygame.event.get():
                 if event.type==pygame.QUIT:
@@ -137,13 +143,21 @@ class Game:
                 if pipe.returnscore():
                     self.score+=1
                     self.score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
-                if pipe.update():
+                pipe.update(self.speed)
+                    
+            for pipe in self.pipes:
+                if pipe.check():
                     self.pipes.remove(pipe)
                     del pipe
+
                 
             self.renderall(screen)
             if self.bird.check_pipe_collide(self.pipes):
                 break
-            pygame.display.update()
-            clock.tick(60.0)
+            
+            clock.tick(60)
+            if ticked:
+                pygame.display.update()
+                ticked=False
+            else: ticked=True
             

@@ -1,5 +1,6 @@
 import pygame
 import sys
+import math
 class Menu:
     def __init__(self,screen,clock,game=False):
         self.menu=pygame.image.load("img/menu.png").convert_alpha()
@@ -7,20 +8,40 @@ class Menu:
         self.menu_rect=self.menu.get_rect(center=(2560/2,700))
         self.icons=[
             [0],
-            [0],
             [0]
             ]
         self.iconsr=[
             [0],
-            [0],
             [0]
         ]
         for i in range(3):
-            self.icons[0].append(pygame.image.load("img/micons/icon1.png").convert_alpha())#"img/micons/icon{i}.png" FIX
+            self.icons[0].append(pygame.image.load(f"img/micons/icon{i+1}.png").convert_alpha())
             self.icons[0][-1]=pygame.transform.scale(self.icons[0][-1],(50,50))
-            self.iconsr[0].append(self.icons.get_rect(center=(0,0)))
+            self.iconsr[0].append(self.icons[0][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2-200))))
+        for i in range(3):
+            self.icons[1].append(pygame.font.SysFont(None,150).render(str(i+1),True,(255,255,255)))
+            self.icons[1][-1]=pygame.transform.scale(self.icons[1][-1],(50,50))
+            self.iconsr[1].append(self.icons[1][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2-100))))
         self.resizeall(screen)
         self.mainloop(screen,clock,game)
+
+    def get_gap(self):
+        if self.icons[0][0]==0:
+            gap=400
+        if self.icons[0][0]==1:
+            gap=300
+        if self.icons[0][0]==2:
+            gap=500
+        return gap
+    def get_speed(self):
+        if self.icons[1][0]==0:
+            speed=1
+        if self.icons[1][0]==1:
+            speed=1.5
+        if self.icons[1][0]==2:
+            speed=0.75
+        return speed
+    
     def resizeall(self,screen):
         wdh=screen.get_width()
         hgt=screen.get_height()
@@ -44,12 +65,16 @@ class Menu:
         self.menu=pygame.image.load("img/menu.png").convert_alpha()
         self.menu=pygame.transform.scale(self.menu,(wdh/2560*500,hgt/1400*500))
         self.menu_rect=self.menu.get_rect(center=(2560/2,700))
-        for i in self.icons:
+        for w,i in enumerate(self.icons):
             for t,icon in enumerate(i):
                 if t!=0:
-                    i[t]=pygame.image.load("img/micons/icon1.png").convert_alpha()#"img/micons/icon{i}.png" FIX
-                    i[t]=pygame.transform.scale(i[t],(wdh/2560*50,hgt/1400*50))
-                    self.iconsr[t]=self.icons.get_rect(center=(0,0))#(x+((t-i[0])*70)-100,y+(z*100)-200)
+                    if w==0:
+                        i[t]=pygame.image.load(f"img/micons/icon{t}.png").convert_alpha()
+                        i[t]=pygame.transform.scale(i[t],(wdh/2560*50,hgt/1400*50))
+                    elif w==1:
+                        i[t]=pygame.font.SysFont(None,150).render(str(t+1),True,(255,255,255))
+                        i[t]=pygame.transform.scale(i[t],(wdh/2560*50,hgt/1400*50))
+    
     
 
     def renderall(self,screen):
@@ -61,9 +86,22 @@ class Menu:
         for z,i in enumerate(self.icons):
             for t,icon in enumerate(i):
                 if t!=0:
-                    screen.blit(icon,)
+                    screen.blit(icon,(self.iconsr[z][t].x*(self.wdh/2560)+self.x_offset,self.iconsr[z][t].y*(self.hgt/1400)+self.y_offset))
     
-
+    def animate(self):
+        for w,i in enumerate(self.iconsr):
+            if i[i[0]+1].centerx!=1280:
+                distance=abs(1280-i[i[0]+1].centerx)
+                if i[i[0]+1].centerx<1279:
+                    for t,icon in enumerate(i):
+                        if t!=0:
+                            icon.centerx+=math.floor((distance)**0.7/5)+1
+                            icon.centerx=round(icon.centerx,1)
+                elif i[i[0]+1].centerx>1281:
+                    for t,icon in enumerate(i):
+                        if t!=0:
+                            icon.centerx-=math.floor((distance)**0.7/5)+1
+                            icon.centerx=round(icon.centerx,1)
     def mainloop(self,screen,clock,game):
         exitmenu=False
         while not exitmenu:
@@ -73,24 +111,26 @@ class Menu:
                     pygame.quit()
                     sys.exit()
                 if event.type==pygame.MOUSEBUTTONUP:
-                    for i in self.icons:
+                    for w,i in enumerate(self.iconsr):
                         for t,icon in enumerate(i):
                             if t!=0:
-                                if icon.get_rect().collidepoint(pygame.mouse.get_pos()):
+                                if icon.collidepoint(pygame.mouse.get_pos()):
                                     i[0]=t-1
+                                    self.icons[w][0]=t-1
                                     clickedicon=True
-                                    print("clicked")
-                                else:
-                                    print(icon.get_rect().x,icon.get_rect().y)
-                                    print(icon.x,icon.y)
+                                    print(i[0])
                     if self.menu_rect.collidepoint(pygame.mouse.get_pos()) and not clickedicon:
                         exitmenu=True
                 if event.type==pygame.VIDEORESIZE:
                     self.resizeall(screen)
                     if game!=False:
                         game.resizeall(screen)
+            
+            self.animate()
+            
             if game!=False:
                 game.renderall(screen)
+            
             self.renderall(screen)
             
             pygame.display.update()

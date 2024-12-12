@@ -12,14 +12,16 @@ class Pipe:
             self.pipe_rect.y-=self.pipe_size[1]
         self.scored=False
         self.top=top
-    def update(self):
-        self.pipe_rect.centerx-=8
+    def update(self,speed):
+        self.pipe_rect.centerx-=8*speed
+        
+    def check(self):
         if self.pipe_rect.centerx<-140:
             return True
         return False
 
     def render(self,screen):
-        screen.blit(self.pipe, (self.pipe_rect.x*self.wdh+self.x_offset,self.pipe_rect.y*self.hgt+self.y_offset))
+        screen.blit(self.pipe, (round(self.pipe_rect.x*self.wdh+self.x_offset,2),round(self.pipe_rect.y*self.hgt+self.y_offset,2)))
 
     def resize(self,x_offset,y_offset,wdh,hgt):
         self.x_offset=x_offset
