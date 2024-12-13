@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import time
 from bird import Bird
 from pipe import Pipe
 class Game:
@@ -113,51 +114,53 @@ class Game:
         self.pipes[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
         
     def mainloop(self,screen,clock):
-        ticked=False
+        lastime=time.time()
+        lastframe=time.time()
         while True:
-            for event in pygame.event.get():
-                if event.type==pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type==pygame.MOUSEBUTTONUP:
-                    self.bird.flap()
-                if event.type==pygame.KEYDOWN:
-                    if event.key==pygame.K_SPACE:
-                        self.bird.flap()
-                if event.type==self.SPAWNPIPE:
-
-                    self.spawnpipe()
-                    
-
-
-
-                if event.type==pygame.VIDEORESIZE:
-                    self.resizeall(screen)
-
             
-            self.bgoffset+=1
+            if time.time()-lastime>1.0/60:
+                lastime=time.time()
+                for event in pygame.event.get():
+                    if event.type==pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    if event.type==pygame.MOUSEBUTTONUP:
+                        self.bird.flap()
+                    if event.type==pygame.KEYDOWN:
+                        if event.key==pygame.K_SPACE:
+                            self.bird.flap()
+                    if event.type==self.SPAWNPIPE:
 
-            self.bird.update()
+                        self.spawnpipe()
+                        
 
-            for pipe in self.pipes:
-                if pipe.returnscore():
-                    self.score+=1
-                    self.score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
-                pipe.update(self.speed)
-                    
-            for pipe in self.pipes:
-                if pipe.check():
-                    self.pipes.remove(pipe)
-                    del pipe
+
+
+                    if event.type==pygame.VIDEORESIZE:
+                        self.resizeall(screen)
 
                 
-            self.renderall(screen)
-            if self.bird.check_pipe_collide(self.pipes):
-                break
-            
-            clock.tick(60)
-            if ticked:
+                self.bgoffset+=self.speed
+
+                self.bird.update()
+
+                for pipe in self.pipes:
+                    if pipe.returnscore():
+                        self.score+=1
+                        self.score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
+                    pipe.update(self.speed)
+                        
+                for pipe in self.pipes:
+                    if pipe.check():
+                        self.pipes.remove(pipe)
+                        del pipe
+
+                    
+                self.renderall(screen)
+                if self.bird.check_pipe_collide(self.pipes):
+                    break
+            if time.time()-lastframe>1.0/30:
                 pygame.display.update()
-                ticked=False
-            else: ticked=True
+            clock.tick()
+            
             

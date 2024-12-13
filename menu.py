@@ -8,9 +8,11 @@ class Menu:
         self.menu_rect=self.menu.get_rect(center=(2560/2,700))
         self.icons=[
             [0],
+            [0],
             [0]
             ]
         self.iconsr=[
+            [0],
             [0],
             [0]
         ]
@@ -22,6 +24,10 @@ class Menu:
             self.icons[1].append(pygame.font.SysFont(None,150).render(str(i+1),True,(255,255,255)))
             self.icons[1][-1]=pygame.transform.scale(self.icons[1][-1],(50,50))
             self.iconsr[1].append(self.icons[1][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2-100))))
+        for i in range(11):
+            self.icons[2].append(pygame.font.SysFont(None,150).render(str(i+1),True,(255,255,255)))
+            self.icons[2][-1]=pygame.transform.scale(self.icons[2][-1],(50,50))
+            self.iconsr[2].append(self.icons[2][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2))))
         self.resizeall(screen)
         self.mainloop(screen,clock,game)
 
@@ -41,6 +47,27 @@ class Menu:
         if self.icons[1][0]==2:
             speed=0.75
         return speed
+    def get_mode(self):
+        if self.icons[2][0]==0:
+            mode="reverse"
+        if self.icons[2][0]==1:
+            mode="ghost"
+        if self.icons[2][0]==2:
+            mode="dark"
+        if self.icons[2][0]==3:
+            mode="flying"
+        if self.icons[2][0]==4:
+            mode="flip"
+        if self.icons[2][0]==5:
+            mode="gravity"
+        if self.icons[2][0]==6:
+            mode="pong"
+        if self.icons[2][0]==7:
+            mode="bomb"
+        if self.icons[2][0]==8:
+            mode="wave"
+        if self.icons[2][0]==9:
+            mode="portal"
     
     def resizeall(self,screen):
         wdh=screen.get_width()
@@ -72,7 +99,10 @@ class Menu:
                         i[t]=pygame.image.load(f"img/micons/icon{t}.png").convert_alpha()
                         i[t]=pygame.transform.scale(i[t],(wdh/2560*50,hgt/1400*50))
                     elif w==1:
-                        i[t]=pygame.font.SysFont(None,150).render(str(t+1),True,(255,255,255))
+                        i[t]=pygame.font.SysFont(None,150).render(str(t),True,(255,255,255))
+                        i[t]=pygame.transform.scale(i[t],(wdh/2560*50,hgt/1400*50))
+                    elif w==2:
+                        i[t]=pygame.font.SysFont(None,150).render(str(t),True,(255,255,255))
                         i[t]=pygame.transform.scale(i[t],(wdh/2560*50,hgt/1400*50))
     
     
