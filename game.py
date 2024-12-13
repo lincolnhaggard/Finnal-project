@@ -23,6 +23,7 @@ class Game:
 
         self.gap=menu.get_gap()
         self.speed=menu.get_speed()
+        self.mode=menu.get_mode()
 
         self.x_offset=0
         self.y_offset=0
@@ -85,7 +86,7 @@ class Game:
             screen.blit(self.bglayer,(self.x_offset-((self.bgoffset*self.bgoffsets[i])%(2560+500))+2560,self.y_offset+(i*140)))
         for pipe in self.pipes:
             pipe.render(screen)#layer 2 pipe
-        screen.blit(self.score_surface,self.score_rect)#layer 3 score
+        screen.blit(self.score_surface,(self.wdh/2560*self.score_rect.x+self.x_offset,self.hgt/1400*self.score_rect.y+self.y_offset))#layer 3 score
         self.bird.render(screen)#layer 4 bird
 
         #sideburns, last layer for screen resizing
@@ -108,6 +109,10 @@ class Game:
         self.lastpipe=height
         gap=self.gap-dificulty
         if gap<100:gap=100
+        if self.mode=="reverse" and random.randint(1,2)==1:
+            self.pipes.append(Pipe("img/pipe.png",2700,gap,False,True))
+            self.pipes[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
+            return None
         self.pipes.append(Pipe("img/pipe.png",2700,height,True))
         self.pipes.append(Pipe("img/pipe.png",2700,height+gap,False))
         self.pipes[-2].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
@@ -159,7 +164,7 @@ class Game:
                 self.renderall(screen)
                 if self.bird.check_pipe_collide(self.pipes):
                     break
-            if time.time()-lastframe>1.0/30:
+            if time.time()-lastframe>1.0/60:
                 pygame.display.update()
             clock.tick()
             

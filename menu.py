@@ -49,26 +49,28 @@ class Menu:
         return speed
     def get_mode(self):
         if self.icons[2][0]==0:
-            mode="reverse"
+            mode="normal"
         if self.icons[2][0]==1:
-            mode="ghost"
+            mode="reverse"
         if self.icons[2][0]==2:
-            mode="dark"
+            mode="ghost"
         if self.icons[2][0]==3:
-            mode="flying"
+            mode="dark"
         if self.icons[2][0]==4:
-            mode="flip"
+            mode="flying"
         if self.icons[2][0]==5:
-            mode="gravity"
+            mode="flip"
         if self.icons[2][0]==6:
-            mode="pong"
+            mode="gravity"
         if self.icons[2][0]==7:
-            mode="bomb"
+            mode="pong"
         if self.icons[2][0]==8:
-            mode="wave"
+            mode="bomb"
         if self.icons[2][0]==9:
+            mode="wave"
+        if self.icons[2][0]==10:
             mode="portal"
-    
+        return mode
     def resizeall(self,screen):
         wdh=screen.get_width()
         hgt=screen.get_height()

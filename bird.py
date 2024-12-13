@@ -30,7 +30,7 @@ class Bird:
     def check_pipe_collide(self,pipes):
         collided=False
         for pipe in pipes:
-            if self.bird_rect.colliderect(pipe.pipe_rect):
+            if self.bird_rect.colliderect(pipe.pipe_rect) or self.bird_rect.colliderect(pipe.mid_rect):
                 collided=True
         if self.bird_rect.top<-40 or self.bird_rect.bottom>1440:
             collided=True
