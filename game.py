@@ -4,6 +4,7 @@ import random
 import time
 from bird import Bird
 from pipe import Pipe
+from mine import Mine
 class Game:
     def __init__(self,screen,clock,menu):
         self.bird=Bird("img/bird.png")
@@ -23,6 +24,7 @@ class Game:
         self.side_burn=pygame.image.load("img/side_burn.png").convert_alpha()
         self.side_burn=pygame.transform.scale(self.side_burn,(1000,1000))
         self.pipes=[]
+        self.mines=[]
 
         self.gap=menu.get_gap()
         self.speed=menu.get_speed()
@@ -37,6 +39,8 @@ class Game:
         self.score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
         self.score_rect= self.score_surface.get_rect(center=(2560/2,75))
         
+        self.yflip=False
+        self.xflip=False
         
 
         self.lastpipe=0
@@ -83,6 +87,8 @@ class Game:
         self.bird.resize(self.x_offset,self.y_offset,wdh,hgt)
         for pipe in self.pipes:
             pipe.resize(self.x_offset,self.y_offset,wdh,hgt)
+        for mine in self.mines:
+            mine.resize(self.x_offset,self.y_offset,wdh,hgt)
         
         
     def renderall(self,screen):
@@ -92,6 +98,8 @@ class Game:
             screen.blit(self.bglayer,(self.x_offset-((self.bgoffset*self.bgoffsets[i])%(2560+500))+2560,self.y_offset+(i*140)))
         for pipe in self.pipes:
             pipe.render(screen)#layer 2 pipe
+        for mine in self.mines:
+            mine.render(screen)
         screen.blit(self.score_surface,(self.wdh/2560*self.score_rect.x+self.x_offset,self.hgt/1400*self.score_rect.y+self.y_offset))#layer 3 score
         self.bird.render(screen)#layer 4 bird
         if self.mode=="dark":
@@ -106,6 +114,11 @@ class Game:
             screen.blit(self.side_burn,(self.wdh+self.x_offset,0))
         else:
             screen.blit(self.side_burn,(0,self.hgt+self.y_offset))
+        
+        if self.xflip:
+            screen.blit(pygame.transform.flip(screen, True, False), (0, 0))
+        if self.yflip:
+            screen.blit(pygame.transform.flip(screen,False,True), (0,0))
 
     def spawnpipe(self):
         dificulty=self.score*5
@@ -135,6 +148,16 @@ class Game:
         self.pipes.append(Pipe("img/pipe.png",2700,height+gap,False))
         self.pipes[-2].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
         self.pipes[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
+        if self.mode=="bomb" and random.randint(1,2)==1:
+            self.spawnmine(height,gap)
+
+    def spawnmine(self,height,gap):
+        for i in range(random.randint(1,3)):
+            self.mines.append(Mine(2700+random.randint(300,1000),random.randint(0,int(height)+100)))
+            self.mines[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
+        for i in range(random.randint(1,2)):
+            self.mines.append(Mine(2700+random.randint(300,1000),random.randint(height+gap-100,1400)))
+            self.mines[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
         
     def mainloop(self,screen,clock):
         lastime=time.time()
@@ -143,18 +166,22 @@ class Game:
             
             if time.time()-lastime>1.0/60:
                 lastime=time.time()
+                wave=False
+                if self.mode=="wave":
+                    wave=True
                 for event in pygame.event.get():
                     if event.type==pygame.QUIT:
                         pygame.quit()
                         sys.exit()
                     if event.type==pygame.MOUSEBUTTONUP:
-                        self.bird.flap()
+                        self.bird.flap(wave)
                     if event.type==pygame.KEYDOWN:
                         if event.key==pygame.K_SPACE:
-                            self.bird.flap()
+                            self.bird.flap(wave)
                     if event.type==self.SPAWNPIPE:
 
                         self.spawnpipe()
+                        
                         
 
 
@@ -174,22 +201,40 @@ class Game:
                 pong=False
                 if self.mode=="pong":
                     pong=True
-                self.bird.update(gravity=gravity,pong=pong)
+                self.bird.update(gravity=gravity,pong=pong,wave=wave)
 
                 for pipe in self.pipes:
                     if pipe.returnscore():
                         self.score+=1
                         self.score_surface=self.font.render(str(int(self.score)),True,(255,255,255))
+                        if self.mode=="flip":
+                            if random.randint(1,2)==1:
+                                if self.xflip:self.xflip=False
+                                else:self.xflip=True
+                            else:
+                                if self.yflip:self.yflip=False
+                                else:self.yflip=True
                     pipe.update(self.speed)
                         
                 for pipe in self.pipes:
                     if pipe.check():
                         self.pipes.remove(pipe)
                         del pipe
+                for mine in self.mines:
+                    mine.update(self.speed)
+                for mine in self.mines:
+                    if mine.check():
+                        self.mines.remove(mine)
+                        del mine
 
-                    
+                rvsd=False
+                if self.mode=="reverse":
+                    rvsd=True
+                portal=False
+                if self.mode=="portal":
+                    portal=True
                 self.renderall(screen)
-                if self.bird.check_pipe_collide(self.pipes):
+                if self.bird.check_pipe_collide(self.pipes,rvsd,portal) or self.bird.check_mine_collide(self.mines):
                     break
             if time.time()-lastframe>1.0/60:
                 pygame.display.update()
