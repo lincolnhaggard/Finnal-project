@@ -21,11 +21,11 @@ class Menu:
             self.icons[0][-1]=pygame.transform.scale(self.icons[0][-1],(50,50))
             self.iconsr[0].append(self.icons[0][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2-200))))
         for i in range(3):
-            self.icons[1].append(pygame.font.SysFont(None,150).render(str(i+1),True,(255,255,255)))
+            self.icons[1].append(pygame.image.load(f"img/micons/icon1{i+1}.png").convert_alpha())
             self.icons[1][-1]=pygame.transform.scale(self.icons[1][-1],(50,50))
             self.iconsr[1].append(self.icons[1][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2-100))))
-        for i in range(11):
-            self.icons[2].append(pygame.font.SysFont(None,150).render(str(i+1),True,(255,255,255)))
+        for i in range(10):
+            self.icons[2].append(pygame.font.SysFont(None,150).render(str(("n","r","d","fy","fp","g","pg","b","w","pr")[i]),True,(255,255,255)))
             self.icons[2][-1]=pygame.transform.scale(self.icons[2][-1],(50,50))
             self.iconsr[2].append(self.icons[2][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2))))
         self.resizeall(screen)
@@ -53,22 +53,20 @@ class Menu:
         if self.icons[2][0]==1:
             mode="reverse"
         if self.icons[2][0]==2:
-            mode="ghost"
-        if self.icons[2][0]==3:
             mode="dark"
-        if self.icons[2][0]==4:
+        if self.icons[2][0]==3:
             mode="flying"
-        if self.icons[2][0]==5:
+        if self.icons[2][0]==4:
             mode="flip"
-        if self.icons[2][0]==6:
+        if self.icons[2][0]==5:
             mode="gravity"
-        if self.icons[2][0]==7:
+        if self.icons[2][0]==6:
             mode="pong"
-        if self.icons[2][0]==8:
+        if self.icons[2][0]==7:
             mode="bomb"
-        if self.icons[2][0]==9:
+        if self.icons[2][0]==8:
             mode="wave"
-        if self.icons[2][0]==10:
+        if self.icons[2][0]==9:
             mode="portal"
         return mode
     def resizeall(self,screen):
@@ -100,12 +98,16 @@ class Menu:
                     if w==0:
                         i[t]=pygame.image.load(f"img/micons/icon{t}.png").convert_alpha()
                         i[t]=pygame.transform.scale(i[t],(wdh/2560*50,hgt/1400*50))
+                        self.iconsr[w][t]=self.icons[w][t].get_rect(center=((2560/2+((t)*70)-100)*(self.wdh/2560)+self.x_offset,(1400/2-200)*(self.hgt/1400)+self.y_offset))
                     elif w==1:
-                        i[t]=pygame.font.SysFont(None,150).render(str(t),True,(255,255,255))
-                        i[t]=pygame.transform.scale(i[t],(wdh/2560*50,hgt/1400*50))
+                        i[t]=pygame.image.load(f"img/micons/icon1{t}.png").convert_alpha()
+                        i[t]=pygame.transform.scale(i[t],(wdh/2560*70,hgt/1400*50))
+                        self.iconsr[w][t]=self.icons[w][t].get_rect(center=((2560/2+((t)*70)-100)*(self.wdh/2560)+self.x_offset,(1400/2-100)*(self.hgt/1400)+self.y_offset))
                     elif w==2:
-                        i[t]=pygame.font.SysFont(None,150).render(str(t),True,(255,255,255))
+                        i[t]=pygame.font.SysFont(None,150).render(str(("n","r","d","fy","fp","g","pg","b","w","pr")[t-1]),True,(255,255,255))
                         i[t]=pygame.transform.scale(i[t],(wdh/2560*50,hgt/1400*50))
+                        self.iconsr[w][t]=self.icons[w][t].get_rect(center=((2560/2+((t)*70)-100)*(self.wdh/2560)+self.x_offset,(1400/2)*(self.hgt/1400)+self.y_offset))
+                    
     
     
 
@@ -118,7 +120,7 @@ class Menu:
         for z,i in enumerate(self.icons):
             for t,icon in enumerate(i):
                 if t!=0:
-                    screen.blit(icon,(self.iconsr[z][t].x*(self.wdh/2560)+self.x_offset,self.iconsr[z][t].y*(self.hgt/1400)+self.y_offset))
+                    screen.blit(icon,(self.iconsr[z][t].x,self.iconsr[z][t].y))
     
     def animate(self):
         for w,i in enumerate(self.iconsr):
@@ -150,7 +152,6 @@ class Menu:
                                     i[0]=t-1
                                     self.icons[w][0]=t-1
                                     clickedicon=True
-                                    print(i[0])
                     if self.menu_rect.collidepoint(pygame.mouse.get_pos()) and not clickedicon:
                         exitmenu=True
                 if event.type==pygame.VIDEORESIZE:

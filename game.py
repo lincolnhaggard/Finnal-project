@@ -12,6 +12,9 @@ class Game:
         
         self.bglayer=pygame.image.load(f"img/bgimgs/bg1/object.png").convert_alpha()
         self.bglayer=pygame.transform.scale(self.bglayer,(1000,1000))
+        self.darkness=pygame.image.load("img/darkness.png").convert_alpha()
+        self.darkness=pygame.transform.scale(self.darkness,(1000,1000))
+        self.darkdist=-2560
         self.bgoffset=100000
         self.bgoffsets=[]
         for i in range(10):
@@ -69,6 +72,9 @@ class Game:
         self.background=pygame.image.load("img/bgimgs/bg1/base.png").convert_alpha()
         self.background=pygame.transform.scale(self.background,(wdh,hgt))
 
+        self.darkness=pygame.image.load("img/darkness.png").convert_alpha()
+        self.darkness=pygame.transform.scale(self.darkness,(wdh,hgt))
+
         self.bglayer=pygame.image.load(f"img/bgimgs/bg1/object.png").convert_alpha()
         self.bglayer=pygame.transform.scale(self.bglayer,(wdh/2560*500,hgt/1400*400))
 
@@ -88,6 +94,11 @@ class Game:
             pipe.render(screen)#layer 2 pipe
         screen.blit(self.score_surface,(self.wdh/2560*self.score_rect.x+self.x_offset,self.hgt/1400*self.score_rect.y+self.y_offset))#layer 3 score
         self.bird.render(screen)#layer 4 bird
+        if self.mode=="dark":
+            screen.blit(self.darkness,(self.x_offset+(self.darkdist*self.wdh/2560),self.y_offset))
+            screen.blit(self.score_surface,(self.wdh/2560*self.score_rect.x+self.x_offset,self.hgt/1400*self.score_rect.y+self.y_offset))
+        self.bird.render_eye(screen)
+
 
         #sideburns, last layer for screen resizing
         screen.blit(self.side_burn, (0,0))
@@ -111,6 +122,13 @@ class Game:
         if gap<100:gap=100
         if self.mode=="reverse" and random.randint(1,2)==1:
             self.pipes.append(Pipe("img/pipe.png",2700,gap,False,True))
+            self.pipes[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
+            return None
+        if self.mode=="flying":
+            mv=random.choice((-3,3))
+            self.pipes.append(Pipe("img/pipe.png",2700,height,True,flying=mv))
+            self.pipes.append(Pipe("img/pipe.png",2700,height+gap,False,flying=mv))
+            self.pipes[-2].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
             self.pipes[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
             return None
         self.pipes.append(Pipe("img/pipe.png",2700,height,True))
@@ -146,8 +164,17 @@ class Game:
 
                 
                 self.bgoffset+=self.speed
-
-                self.bird.update()
+                if self.darkdist<0:
+                    self.darkdist+=self.speed
+                else:
+                    self.darkdist=0
+                gravity=False
+                if self.mode=="gravity":
+                    gravity=True
+                pong=False
+                if self.mode=="pong":
+                    pong=True
+                self.bird.update(gravity=gravity,pong=pong)
 
                 for pipe in self.pipes:
                     if pipe.returnscore():
