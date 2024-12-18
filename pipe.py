@@ -22,19 +22,30 @@ class Pipe:
             self.bottom_rect=self.bottom.get_rect(x=x,y=0)
             self.bottom_rect.centery=1400-self.gap
 
-        else:
-            if self.flying!=False:#makes pipes move
-                self.mv=flying
-                self.offset=0
-
+        elif self.flying!=False:
+            self.mv=flying
+            self.offset=0
             self.pipe_rect=self.top.get_rect(x=x,y=y)
             if ontop:
                 self.pipe_rect.y-=129
             if ontop:
-                self.mid=pygame.transform.scale(self.mid,(240,abs(self.pipe_rect.top+100)))
+                self.mid=pygame.transform.scale(self.mid,(80*3,abs(self.pipe_rect.top+300)))
+                self.mid_rect=self.mid.get_rect(x=x,y=-250)
+                self.mid_rect.top=self.pipe_rect.top+50
+            else:
+                self.mid=pygame.transform.scale(self.mid,(80*3,1400-self.pipe_rect.bottom+300))
+                self.mid_rect=self.mid.get_rect(x=x,y=self.pipe_rect.bottom-50)
+        else:
+            self.pipe_rect=self.top.get_rect(x=x,y=y)
+            if ontop:
+                self.pipe_rect.y-=129
+            if ontop:
+                self.mid=pygame.transform.scale(self.mid,(80*3,abs(self.pipe_rect.top+100)))
                 self.mid_rect=self.mid.get_rect(x=x,y=-50)
             else:
-                self.mid=pygame.transform.scale(self.mid,(240,1400-self.pipe_rect.bottom+100))
+                scale=1400-self.pipe_rect.bottom+100
+                if scale<0:scale=1
+                self.mid=pygame.transform.scale(self.mid,(80*3,scale))
                 self.mid_rect=self.mid.get_rect(x=x,y=self.pipe_rect.bottom-50)
 
         self.scored=False#so that score is not counted more than once
@@ -52,7 +63,7 @@ class Pipe:
             else:
                 self.mid_rect.y=self.pipe_rect.bottom-50
             self.offset+=self.mv*speed
-            if self.offset>200 or self.offset<-200:
+            if (self.offset>200 or self.offset<-200) and speed!=0:
                 self.mv*=-1
 
     def check(self):#used to delete the pipe
@@ -65,7 +76,7 @@ class Pipe:
         screen.blit(self.top, (round(self.pipe_rect.x*self.wdh+self.x_offset,2),round(self.pipe_rect.y*self.hgt+self.y_offset,2)))
         if self.reversed:
             screen.blit(self.bottom, (round(self.bottom_rect.x*self.wdh+self.x_offset,2),round(self.bottom_rect.y*self.hgt+self.y_offset,2)))
-        
+        self.update(0)
 
     def resize(self,x_offset,y_offset,wdh,hgt):
         #makes sure the pipe scales with window size
@@ -87,7 +98,9 @@ class Pipe:
             if self.ontop:
                 self.mid=pygame.transform.scale(self.mid,(wdh/2560*240,hgt/1400*abs(self.pipe_rect.top+100)))
             else:
-                self.mid=pygame.transform.scale(self.mid,(wdh/2560*240,hgt/1400*(1400-self.pipe_rect.bottom+100)))
+                scale=1400-self.pipe_rect.bottom+100
+                if scale<0:scale=1
+                self.mid=pygame.transform.scale(self.mid,(wdh/2560*240,hgt/1400*(scale)))
         
         self.x_offset=x_offset
         self.y_offset=y_offset

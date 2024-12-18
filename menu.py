@@ -14,6 +14,8 @@ class Menu:
             menucopy
             play
             play_rect
+            icon
+            iconr
             side_burn
             x_offset
             y_offset
@@ -21,29 +23,15 @@ class Menu:
             hgt (resized height)
            """
         self.icons=[
-                [0],
-                [0]
-                [0]
+                [0,0,0,0],
+                [0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0]
                 ]
         self.iconsr=[
-                [0],
-                [0]
-                [0]
+                [0,0,0,0],
+                [0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0]
                 ]
-        #icons and iconr have to be defined in __init__ so that the length of the list stays consistent
-        
-        for L in range(3):
-            self.icons[0].append(pygame.image.load(f"img/micons/icon0{L+1}.png").convert_alpha())
-            self.icons[0][-1]=pygame.transform.scale(self.icons[0][-1],(50,50))
-            self.iconsr[0].append(self.icons[0][-1].get_rect(center=((2560/2+((L)*70)-100),(1400/2-200))))
-        for L in range(3):
-            self.icons[1].append(pygame.image.load(f"img/micons/icon1{i+1}.png").convert_alpha())
-            self.icons[1][-1]=pygame.transform.scale(self.icons[1][-1],(50,50))
-            self.iconsr[1].append(self.icons[1][-1].get_rect(center=((2560/2+((L)*70)-100),(1400/2-100))))
-        for L in range(10):
-            self.icons[2].append(pygame.image.load(f"img/micons/icon2{i+1}.png").convert_alpha())
-            self.icons[2][-1]=pygame.transform.scale(self.icons[2][-1],(50,50))
-            self.iconsr[2].append(self.icons[2][-1].get_rect(center=((2560/2+((L)*70)-100),(1400/2))))
         
         self.resizeall(screen)
         self.mainloop(screen,clock,game)
@@ -141,7 +129,7 @@ class Menu:
         
         
         
-        for w,i in enumerate(self.icons):
+        for w,i in enumerate(self.icons):#icons and iconr are defined in here because they are going to be any due to resizing
             for t,icon in enumerate(i):
                 if t!=0:
                     i[t]=pygame.image.load(f"img/micons/icon{str(w)+str(t)}.png").convert_alpha()

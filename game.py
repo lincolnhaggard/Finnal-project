@@ -104,7 +104,7 @@ class Game:
         #the last one renders ontop, usually the side_burns
         screen.blit(self.background,(self.x_offset,self.y_offset))#layer 1/8 background
         for L in range(10):#layer 2/8 clouds
-            screen.blit(self.bglayer,(self.x_offset-((self.bgoffset*self.bgoffsets[L])%(2560+500))+2560,self.y_offset+(i*140)))
+            screen.blit(self.bglayer,(self.x_offset-((self.bgoffset*self.bgoffsets[L])%(2560+500))+2560,self.y_offset+(L*140)))
         for mine in self.mines:#layer 3/8 mines
             mine.render(screen)
         for pipe in self.pipes:#layer 4/8 pipes
@@ -248,7 +248,7 @@ class Game:
                     break
                 self.renderall(screen)
 
-            if time.time()-lastframe>1.0/60:#renders the game 60 times a second (in an attempt to prevent screen tearing)
+            if time.time()-lastframe>1.0/30:#renders the game 30 times a second (in an attempt to prevent screen tearing)
                 pygame.display.update()
             clock.tick()
             
