@@ -5,7 +5,10 @@ class Menu:
     def __init__(self,screen,clock,game=False):
         self.menu=pygame.image.load("img/menu.png").convert_alpha()
         self.menu=pygame.transform.scale(self.menu,(500,500))
+        self.play=pygame.image.load("img/play_button.png").convert_alpha()
+        self.play=pygame.transform.scale(self.play,(400,200))
         self.menu_rect=self.menu.get_rect(center=(2560/2,700))
+        self.play_rect=self.menu.get_rect(center=(2560/2,700))
         self.icons=[
             [0],
             [0],
@@ -25,7 +28,7 @@ class Menu:
             self.icons[1][-1]=pygame.transform.scale(self.icons[1][-1],(50,50))
             self.iconsr[1].append(self.icons[1][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2-100))))
         for i in range(10):
-            self.icons[2].append(pygame.font.SysFont(None,150).render(str(("n","r","d","fy","fp","g","pg","b","w","pr")[i]),True,(255,255,255)))
+            self.icons[2].append(pygame.image.load(f"img/micons/icon2{i+1}.png").convert_alpha())
             self.icons[2][-1]=pygame.transform.scale(self.icons[2][-1],(50,50))
             self.iconsr[2].append(self.icons[2][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2))))
         self.resizeall(screen)
@@ -90,8 +93,17 @@ class Menu:
         self.hgt=hgt
         self.wdh=wdh
         self.menu=pygame.image.load("img/menu.png").convert_alpha()
-        self.menu=pygame.transform.scale(self.menu,(wdh/2560*500,hgt/1400*500))
+        self.menu=pygame.transform.scale(self.menu,(wdh/2560*400,hgt/1400*400))
+        self.menucopy=pygame.image.load("img/menu.png").convert_alpha()
+        self.menucopy=pygame.transform.scale(self.menucopy, (self.wdh/2560*400,self.hgt/1400*400))
+        self.play=pygame.image.load("img/play_button.png").convert_alpha()
+        self.play=pygame.transform.scale(self.play,(wdh/2560*390,hgt/1400*100))
         self.menu_rect=self.menu.get_rect(center=(2560/2,700))
+        self.play_rect=self.play.get_rect(center=(2560/2,700+200))
+        self.menu_rect.centerx=2560/2*(self.wdh/2560)+self.x_offset
+        self.menu_rect.centery=(1400/2-60)*(self.hgt/1400)+self.y_offset
+        self.play_rect.centerx=(2560/2)*(self.wdh/2560)+self.x_offset
+        self.play_rect.centery=(1400/2+200)*(self.hgt/1400)+self.y_offset
         for w,i in enumerate(self.icons):
             for t,icon in enumerate(i):
                 if t!=0:
@@ -104,7 +116,7 @@ class Menu:
                         i[t]=pygame.transform.scale(i[t],(wdh/2560*70,hgt/1400*50))
                         self.iconsr[w][t]=self.icons[w][t].get_rect(center=((2560/2+((t)*70)-100)*(self.wdh/2560)+self.x_offset,(1400/2-100)*(self.hgt/1400)+self.y_offset))
                     elif w==2:
-                        i[t]=pygame.font.SysFont(None,150).render(str(("n","r","d","fy","fp","g","pg","b","w","pr")[t-1]),True,(255,255,255))
+                        i[t]=pygame.image.load(f"img/micons/icon2{t}.png").convert_alpha()
                         i[t]=pygame.transform.scale(i[t],(wdh/2560*50,hgt/1400*50))
                         self.iconsr[w][t]=self.icons[w][t].get_rect(center=((2560/2+((t)*70)-100)*(self.wdh/2560)+self.x_offset,(1400/2)*(self.hgt/1400)+self.y_offset))
                     
@@ -114,13 +126,17 @@ class Menu:
     def renderall(self,screen):
         x=2560/2*(self.wdh/2560)+self.x_offset
         y=1400/2*(self.hgt/1400)+self.y_offset
-        self.menu_rect.centerx=2560/2*(self.wdh/2560)+self.x_offset
-        self.menu_rect.centery=1400/2*(self.hgt/1400)+self.y_offset
+        
         screen.blit(self.menu, self.menu_rect)
+        
+
+        self.menu.blit(self.menucopy, (0,0))
+        screen.blit(self.play, self.play_rect)
         for z,i in enumerate(self.icons):
             for t,icon in enumerate(i):
                 if t!=0:
-                    screen.blit(icon,(self.iconsr[z][t].x,self.iconsr[z][t].y))
+                    #if self.iconsr[z][t].left>self.menu_rect.left and self.iconsr[z][t].right<self.menu_rect.right:
+                        self.menu.blit(icon,(self.iconsr[z][t].x-self.menu_rect.x,self.iconsr[z][t].y-self.menu_rect.y))
     
     def animate(self):
         for w,i in enumerate(self.iconsr):
@@ -152,7 +168,7 @@ class Menu:
                                     i[0]=t-1
                                     self.icons[w][0]=t-1
                                     clickedicon=True
-                    if self.menu_rect.collidepoint(pygame.mouse.get_pos()) and not clickedicon:
+                    if self.play_rect.collidepoint(pygame.mouse.get_pos()) and not clickedicon:
                         exitmenu=True
                 if event.type==pygame.VIDEORESIZE:
                     self.resizeall(screen)
