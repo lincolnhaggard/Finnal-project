@@ -2,7 +2,10 @@ import pygame
 import sys
 import math
 
+
 class Menu:
+
+
     def __init__(self,screen,clock,game=False):
         """there are some variables not defined in the __init__ function
            they are instead defiened in the resize all function:
@@ -19,24 +22,29 @@ class Menu:
            """
         self.icons=[
                 [0],
-                [0],
-                [0]]
+                [0]
+                [0]
+                ]
         self.iconsr=[
                 [0],
-                [0],
-                [0]]
-        for i in range(3):
-            self.icons[0].append(pygame.image.load(f"img/micons/icon0{i+1}.png").convert_alpha())
+                [0]
+                [0]
+                ]
+        #icons and iconr have to be defined in __init__ so that the length of the list stays consistent
+        
+        for L in range(3):
+            self.icons[0].append(pygame.image.load(f"img/micons/icon0{L+1}.png").convert_alpha())
             self.icons[0][-1]=pygame.transform.scale(self.icons[0][-1],(50,50))
-            self.iconsr[0].append(self.icons[0][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2-200))))
-        for i in range(3):
+            self.iconsr[0].append(self.icons[0][-1].get_rect(center=((2560/2+((L)*70)-100),(1400/2-200))))
+        for L in range(3):
             self.icons[1].append(pygame.image.load(f"img/micons/icon1{i+1}.png").convert_alpha())
             self.icons[1][-1]=pygame.transform.scale(self.icons[1][-1],(50,50))
-            self.iconsr[1].append(self.icons[1][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2-100))))
-        for i in range(10):
+            self.iconsr[1].append(self.icons[1][-1].get_rect(center=((2560/2+((L)*70)-100),(1400/2-100))))
+        for L in range(10):
             self.icons[2].append(pygame.image.load(f"img/micons/icon2{i+1}.png").convert_alpha())
             self.icons[2][-1]=pygame.transform.scale(self.icons[2][-1],(50,50))
-            self.iconsr[2].append(self.icons[2][-1].get_rect(center=((2560/2+((i)*70)-100),(1400/2))))
+            self.iconsr[2].append(self.icons[2][-1].get_rect(center=((2560/2+((L)*70)-100),(1400/2))))
+        
         self.resizeall(screen)
         self.mainloop(screen,clock,game)
 
