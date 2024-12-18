@@ -28,7 +28,7 @@ class Game:
 
         self.bgoffset=100000 #this is for the cloud background objects
         self.bgoffsets=[]#this controls how fast they move
-        for i in range(10):
+        for _ in range(10):
             self.bgoffsets.append(random.randint(25000,50000)/5000)
         self.pipes=[]
         self.mines=[]
@@ -103,8 +103,8 @@ class Game:
     def renderall(self,screen):
         #the last one renders ontop, usually the side_burns
         screen.blit(self.background,(self.x_offset,self.y_offset))#layer 1/8 background
-        for i in range(10):#layer 2/8 clouds
-            screen.blit(self.bglayer,(self.x_offset-((self.bgoffset*self.bgoffsets[i])%(2560+500))+2560,self.y_offset+(i*140)))
+        for L in range(10):#layer 2/8 clouds
+            screen.blit(self.bglayer,(self.x_offset-((self.bgoffset*self.bgoffsets[L])%(2560+500))+2560,self.y_offset+(i*140)))
         for mine in self.mines:#layer 3/8 mines
             mine.render(screen)
         for pipe in self.pipes:#layer 4/8 pipes
@@ -163,10 +163,10 @@ class Game:
 
     def spawnmine(self,height,gap):
         #simpler version of the spawn pipe function
-        for i in range(random.randint(1,3)):#spawns on top half of the screen
+        for _ in range(random.randint(1,3)):#spawns on top half of the screen
             self.mines.append(Mine(2700+random.randint(300,1000),random.randint(0,int(height)+100)))
             self.mines[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
-        for i in range(random.randint(1,2)):#spawns on bottom half of the screen
+        for _ in range(random.randint(1,2)):#spawns on bottom half of the screen
             self.mines.append(Mine(2700+random.randint(300,1000),random.randint(height+gap-100,1400)))
             self.mines[-1].resize(self.x_offset,self.y_offset,self.wdh,self.hgt)
         
@@ -247,7 +247,7 @@ class Game:
                 if self.bird.check_pipe_collide(self.pipes,rvsd,portal) or self.bird.check_mine_collide(self.mines):
                     break
                 self.renderall(screen)
-                
+
             if time.time()-lastframe>1.0/60:#renders the game 60 times a second (in an attempt to prevent screen tearing)
                 pygame.display.update()
             clock.tick()

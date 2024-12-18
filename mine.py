@@ -12,22 +12,19 @@ class Mine:
             wdh (resized width)
             hgt (resized height)
            """
-
         self.mine=pygame.image.load("img/mine.png").convert_alpha()
         self.mine=pygame.transform.scale(self.mine, (57.75,56.5))
         self.mine_rect=self.mine.get_rect(center= (x,y))
-
         self.x=x
         self.y=y
 
     def resize(self,x_offset,y_offset,wdh,hgt):
         #makes sure the mine is rendered apropriatly
-        self.x_offset=x_offset
-        self.y_offset=y_offset
-
         self.mine=pygame.image.load("img/mine.png").convert_alpha()
         self.mine=pygame.transform.scale(self.mine,(wdh/2560*223/3,hgt/1400*226/3))
 
+        self.x_offset=x_offset
+        self.y_offset=y_offset 
         self.wdh=wdh/2560#save wdh(width) and hgt(height) as ratios
         self.hgt=hgt/1400
 

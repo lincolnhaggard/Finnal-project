@@ -15,7 +15,6 @@ class Bird:
         self.bird=pygame.image.load("img/bird.png").convert_alpha()
         self.bird=pygame.transform.scale(self.bird,(153,102))
         self.bird_rect=self.bird.get_rect(center = (280,450))
-        
         #vos is up and down, xvos is back and forth
         self.vos=-10
         self.xvos=3
@@ -33,9 +32,7 @@ class Bird:
             self.vos+=0.4
             if gravity:#gravity(moon mode) counteracts half of gravity
                 self.vos-=0.2
-        
         self.bird_rect.centery+=self.vos#updates the position of the bird
-
         if pong:#moves the bird back and forth
             self.bird_rect.x+=self.xvos
             if self.bird_rect.x<51*1.5 or self.bird_rect.x>1280-(34*1.5):
@@ -49,15 +46,13 @@ class Bird:
     
     def resize(self,x_offset,y_offset,wdh,hgt):
         #This code makes sure the bird is rendered apropriatly to window size
-        self.x_offset=x_offset
-        self.y_offset=y_offset
-
         self.bird=pygame.image.load("img/bird.png").convert_alpha()
         self.bird=pygame.transform.scale(self.bird,(wdh/2560*153,hgt/1400*102))
-
         self.bird_eye=pygame.image.load("img/bird_eye.png").convert_alpha()
         self.bird_eye=pygame.transform.scale(self.bird_eye,(wdh/2560*153,hgt/1400*102))
 
+        self.x_offset=x_offset
+        self.y_offset=y_offset
         self.wdh=wdh/2560#saves wdh(width) and hgt(height) as ratios
         self.hgt=hgt/1400
     
@@ -67,7 +62,6 @@ class Bird:
             #checks collision with each part of the pipe
             if self.bird_rect.colliderect(pipe.pipe_rect) or self.bird_rect.colliderect(pipe.mid_rect) or (pipe.reversed and self.bird_rect.colliderect(pipe.bottom_rect)):
                 collided=True
-        
         #wraps around the screen if portal mode is active otherwise dies
         if portal:
             if self.bird_rect.bottom<-40:
@@ -76,7 +70,6 @@ class Bird:
                 self.bird_rect.bottom=10
         elif self.bird_rect.top<-40 or self.bird_rect.bottom>1440:
             collided=True
-        
         return collided
     
     def check_mine_collide(self,mines):

@@ -68,27 +68,29 @@ class Pipe:
         
 
     def resize(self,x_offset,y_offset,wdh,hgt):
-        self.x_offset=x_offset
-        self.y_offset=y_offset
+        #makes sure the pipe scales with window size
         self.top=pygame.image.load("img/pipe_top.png").convert_alpha()
         self.mid=pygame.image.load("img/pipe_mid.png").convert_alpha()
         self.top=pygame.transform.scale(self.top,(wdh/2560*240,hgt/1400*129))
-        if self.reversed:
+        if self.reversed:#render the bottom if the pipe is reveres
             self.bottom=pygame.image.load("img/pipe_top.png").convert_alpha()
             self.bottom=pygame.transform.scale(self.bottom,(wdh/2560*240,hgt/1400*129))
             self.mid=pygame.transform.scale(self.mid,(wdh/2560*240,hgt/1400*(1400-(self.gap*2)-50)))
-        elif self.flying!=False:
+        elif self.flying!=False:#makes the pipe longer if flying
             if self.ontop:
                 self.mid=pygame.transform.scale(self.mid,(wdh/2560*240,hgt/1400*abs(self.pipe_rect.top+300)))
                 self.mid_rect.bottom=self.pipe_rect.top+50
             else:
                 self.mid=pygame.transform.scale(self.mid,(wdh/2560*240,hgt/1400*(1400-self.pipe_rect.bottom+300)))
-        else:
+        else:#normal pipe rendering
 
             if self.ontop:
                 self.mid=pygame.transform.scale(self.mid,(wdh/2560*240,hgt/1400*abs(self.pipe_rect.top+100)))
             else:
                 self.mid=pygame.transform.scale(self.mid,(wdh/2560*240,hgt/1400*(1400-self.pipe_rect.bottom+100)))
+        
+        self.x_offset=x_offset
+        self.y_offset=y_offset
         self.wdh=wdh/2560
         self.hgt=hgt/1400
     
