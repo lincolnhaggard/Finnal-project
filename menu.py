@@ -1,6 +1,7 @@
 import pygame
 import sys
 import math
+
 class Menu:
     def __init__(self,screen,clock,game=False):
         """there are some variables not defined in the __init__ function
@@ -10,6 +11,11 @@ class Menu:
             menucopy
             play
             play_rect
+            side_burn
+            x_offset
+            y_offset
+            wdh (resized width)
+            hgt (resized height)
            """
         self.icons=[
                 [0],
@@ -82,6 +88,7 @@ class Menu:
         wdh=screen.get_width()
         hgt=screen.get_height()
 
+        #side_burns are to prevent bluring if the window size does not match 2560 by 1400
         self.side_burn=pygame.image.load("img/side_burn.png").convert_alpha()
 
         if wdh/2560>hgt/1400:
