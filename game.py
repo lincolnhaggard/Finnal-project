@@ -8,7 +8,6 @@ from mine import Mine
 
 class Game:
     def __init__(self,screen,clock,menu):
-        self.bird=Bird("img/bird.png")
         """there are some variables not defined in the __init__ function
            they are instead defiened in the resize all function:
             background
@@ -20,6 +19,8 @@ class Game:
             wdh (resized width)
             hgt (resized height)
            """
+        
+        self.bird=Bird()
         
         self.darkdist=-2560 #the darknessed staring pos from the right side of the screen
 
